@@ -4,15 +4,9 @@ local RingBufferManager = {}
 
 local Buffers = {}
 
-type RingBuffer<T> = {
-	head : number,
-	capacity: number,
-	size: number,
-	[number]: T
-}
 
-function RingBufferManager.new<T>(capacity: number) : number
-	local rbuffer  = {}
+function RingBufferManager.new(capacity: number) : number
+	local rbuffer = {}
 	rbuffer.head = 0
 	rbuffer.capacity = capacity
 	rbuffer.size = 0
@@ -22,8 +16,8 @@ function RingBufferManager.new<T>(capacity: number) : number
 	return #Buffers
 end
 
-function RingBufferManager.push<T>(bufferId: number, value: T)
-	local buf: RingBuffer<T> = Buffers[bufferId]
+function RingBufferManager.push(bufferId: number, value)
+	local buf = Buffers[bufferId]
 	
 	if not buf then return end
 	
@@ -39,19 +33,19 @@ end
 
 
 function RingBufferManager.readNewest<T>(bufferId: number): T
-	local buf: RingBuffer<T> = Buffers[bufferId]
+	local buf = Buffers[bufferId]
 	
 	return buf[buf.head]
 end
 
 function RingBufferManager.readOldest<T>(bufferId: number): T
-	local buf: RingBuffer<T> = Buffers[bufferId]
+	local buf = Buffers[bufferId]
 	
 	return buf[(buf.head % buf.size) +1 ]
 end
 
 function RingBufferManager.readAt<T>(bufferId : number, index: number): T
-	local buf: RingBuffer<T> = Buffers[bufferId]
+	local buf= Buffers[bufferId]
 
 	return buf[index]
 end
