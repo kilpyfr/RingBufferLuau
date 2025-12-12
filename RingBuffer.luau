@@ -35,6 +35,11 @@ function RingBufferManager:push<V>(value: V)
 	
 end
 
+function RingBufferManager:replaceAt(index: number, value)
+	
+	self[index]  = value
+	
+end
 
 function RingBufferManager:readNewest(): any	
 	
