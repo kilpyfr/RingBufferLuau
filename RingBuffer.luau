@@ -2,52 +2,55 @@
 
 local RingBufferManager = {}
 
-local Buffers = {}
+RingBufferManager.__index = RingBufferManager
 
+export type RingBuffer<T> = typeof(setmetatable({} :: {
+	head: number,
+	capacity : number,
+	size: number,
+	[number]: T,
+}, RingBufferManager
+))
 
-function RingBufferManager.new(capacity: number) : number
+function RingBufferManager.new<V>(capacity: number): RingBuffer<V>
 	local rbuffer = {}
 	rbuffer.head = 0
 	rbuffer.capacity = capacity
 	rbuffer.size = 0
 	
-	Buffers[#Buffers + 1] = rbuffer
 	
-	return #Buffers
+	return setmetatable(rbuffer, RingBufferManager)
 end
 
-function RingBufferManager.push(bufferId: number, value)
-	local buf = Buffers[bufferId]
+function RingBufferManager:push<V>(value: V)
+	local self = self :: RingBuffer<V>
 	
-	if not buf then return end
+	self.head = (self.head % self.capacity) +1 
+	self[self.head] = value
 	
-	buf.head = (buf.head % buf.capacity) +1 
-	buf[buf.head] = value
-	
-	if buf.size < buf.capacity then
-		buf.size += 1
+	if self.size < self.capacity then
+		self.size += 1
 	end
 	
 	
 end
 
 
-function RingBufferManager.readNewest<T>(bufferId: number): T
-	local buf = Buffers[bufferId]
+function RingBufferManager:readNewest(): any	
 	
-	return buf[buf.head]
+	return self[self.head]
 end
 
-function RingBufferManager.readOldest<T>(bufferId: number): T
-	local buf = Buffers[bufferId]
+function RingBufferManager:readOldest() : any
 	
-	return buf[(buf.head % buf.size) +1 ]
+	
+	return self[(self.head % self.size) +1 ]
 end
 
-function RingBufferManager.readAt<T>(bufferId : number, index: number): T
-	local buf= Buffers[bufferId]
+function RingBufferManager:readAt(index: number) : any
+	
 
-	return buf[index]
+	return self[index]
 end
 
 
